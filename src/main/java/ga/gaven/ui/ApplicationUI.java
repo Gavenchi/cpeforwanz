@@ -26,17 +26,18 @@ package ga.gaven.ui;
 
 import ga.gaven.Application;
 import ga.gaven.StringByteEncoder;
-import javafx.beans.value.ObservableValue;
+import ga.gaven.charts.DigitalSignal;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
@@ -84,9 +85,10 @@ public class ApplicationUI {
             "Bipolar AMI"
     );
 
-    public ApplicationUI() {
 
-    }
+    private NumberAxis time = new NumberAxis();
+    private NumberAxis signal = new NumberAxis(0, 5, 1);
+    private final LineChart<Number,Number> chart = new LineChart<>(time, signal);
 
     @FXML
     private void initialize() {
@@ -108,6 +110,11 @@ public class ApplicationUI {
             txtEBCDICHex.setText(Arrays.toString(ebcdic.inHex()));
             txtEBCDICOctal.setText(Arrays.toString(ebcdic.inOctal()));
 
+            // chart
+            StringByteEncoder.BitResult abit = new StringByteEncoder.BitResult(ascii);
+            chart.getData().clear();
+            chart.getData().add(new DigitalSignal().generateSeries(abit));
+
             txtStatus.setText("");
         });
 
@@ -115,6 +122,14 @@ public class ApplicationUI {
         cmbEncoding.setValue(encodings.get(0));
         cmbEncodingValues.setItems(values);
         cmbEncodingValues.setValue(values.get(0));
+
+        time.setLabel("Time");
+        signal.setLabel("Signal");
+        chart.setCreateSymbols(false);
+        chart.setPadding(new Insets(0, 10, 0, 0));
+        chart.setPrefWidth(Integer.MAX_VALUE);
+        chart.setMaxWidth(Integer.MAX_VALUE);
+        panelEncode.getChildren().add(chart);
     }
 
     public void attachApplication(Application application) {

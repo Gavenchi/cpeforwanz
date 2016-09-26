@@ -56,6 +56,27 @@ public class StringByteEncoder {
         }
     }
 
+    public static class BitResult {
+        final byte[] bits;
+
+        public BitResult(Result result) {
+            String[] sBits = result.inBits();
+            bits = new byte[sBits.length * 8];
+
+            int idx = 0;
+
+            for(int i = 0; i < sBits.length; i++) {
+                for(char c : sBits[i].toCharArray()) {
+                    bits[idx++] = (byte)((c == '0') ? 0 : 1);
+                }
+            }
+        }
+
+        public byte[] bitResult() {
+            return bits;
+        }
+    }
+
     public Result toEBCDIC(String s) {
         byte[] bytes = toEBCDICBytes(s);
         String[] b = new String[bytes.length];

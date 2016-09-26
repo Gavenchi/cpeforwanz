@@ -25,6 +25,7 @@
 package ga.gaven.ui;
 
 import ga.gaven.Application;
+import ga.gaven.StringByteEncoder;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -50,7 +51,15 @@ public class ApplicationUI {
     @FXML
     private TextArea txtASCII;
     @FXML
+    private TextArea txtASCIIHex;
+    @FXML
+    private TextArea txtASCIIOctal;
+    @FXML
     private TextArea txtEBCDIC;
+    @FXML
+    private TextArea txtEBCDICHex;
+    @FXML
+    private TextArea txtEBCDICOctal;
     @FXML
     private Label txtStatus;
     @FXML
@@ -59,6 +68,8 @@ public class ApplicationUI {
     private ComboBox<String> cmbEncodingValues;
     @FXML
     private HBox panelEncode;
+
+    private StringByteEncoder encoder = new StringByteEncoder();
 
     private ObservableList<String> values = FXCollections.observableArrayList(
             "ASCII",
@@ -83,8 +94,20 @@ public class ApplicationUI {
 
         txtDataInput.textProperty().addListener((observable, oldValue, newValue) -> {
             txtStatus.setText("Encoding...");
-            txtASCII.setText(toASCIIBinary(newValue));
-            txtEBCDIC.setText(toEBCDICBinary(newValue));
+            // ascii
+            StringByteEncoder.Result ascii = encoder.toASCII(newValue);
+
+            txtASCII.setText(Arrays.toString(ascii.inBits()));
+            txtASCIIHex.setText(Arrays.toString(ascii.inHex()));
+            txtASCIIOctal.setText(Arrays.toString(ascii.inOctal()));
+
+            // ebcdic
+            StringByteEncoder.Result ebcdic = encoder.toEBCDIC(newValue);
+
+            txtEBCDIC.setText(Arrays.toString(ebcdic.inBits()));
+            txtEBCDICHex.setText(Arrays.toString(ebcdic.inHex()));
+            txtEBCDICOctal.setText(Arrays.toString(ebcdic.inOctal()));
+
             txtStatus.setText("");
         });
 
@@ -98,26 +121,4 @@ public class ApplicationUI {
         this.application = application;
     }
 
-    public String toEBCDICBinary(String s) {
-        byte[] bytes = s.getBytes(Charset.forName("Cp500"));
-
-        String[] arr = new String[bytes.length];
-
-        for(int i = 0; i < bytes.length; i++) {
-            arr[i] = Integer.toBinaryString(bytes[i] & 0xFF);
-        }
-
-        return Arrays.toString(arr);
-    }
-
-    public String toASCIIBinary(String s) {
-        byte[] bytes = s.getBytes(StandardCharsets.US_ASCII);
-        String[] arr = new String[bytes.length];
-
-        for(int i = 0; i < bytes.length; i++) {
-            arr[i] = String.format("%8s", Integer.toBinaryString(bytes[i] & 0xFF)).replace(' ', '0');
-        }
-
-        return Arrays.toString(arr);
-    }
 }

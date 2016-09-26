@@ -30,37 +30,37 @@ import javafx.scene.chart.XYChart;
 /**
  * @author Gavenchi <johnjoshuaferrer@gmail.com>
  */
-public class DigitalSignal implements TimingDiagram {
+public class Manchester implements TimingDiagram {
 
-    protected final XYChart.Series series = new XYChart.Series<>();
-    protected double idx = 0;
+    private final XYChart.Series series = new XYChart.Series<>();
+    private double idx = 0;
 
-    public DigitalSignal() {
-        series.setName("Data");
+    public Manchester() {
+        series.setName("Manchester");
     }
 
     @Override
     public void lowToHigh() {
-        series.getData().add(new XYChart.Data(idx, 1.5));
-        series.getData().add(new XYChart.Data(idx, 2.5));
+        series.getData().add(new XYChart.Data(idx, 0.5));
+        series.getData().add(new XYChart.Data(idx, 0.5));
     }
 
     @Override
     public void highToLow() {
-        series.getData().add(new XYChart.Data(idx, 2.5));
-        series.getData().add(new XYChart.Data(idx, 1.5));
+        series.getData().add(new XYChart.Data(idx, -0.5));
+        series.getData().add(new XYChart.Data(idx, -0.5));
     }
 
     @Override
     public void low() {
-        series.getData().add(new XYChart.Data(idx, 1.5));
-        series.getData().add(new XYChart.Data(idx++, 1.5));
+        series.getData().add(new XYChart.Data(idx, -0.5));
+        series.getData().add(new XYChart.Data(idx += 0.5, -0.5));
     }
 
     @Override
     public void high() {
-        series.getData().add(new XYChart.Data(idx, 2.5));
-        series.getData().add(new XYChart.Data(idx++, 2.5));
+        series.getData().add(new XYChart.Data(idx, 0.5));
+        series.getData().add(new XYChart.Data(idx += 0.5, 0.5));
     }
 
     @Override
@@ -68,20 +68,19 @@ public class DigitalSignal implements TimingDiagram {
         this.idx = 0;
         this.series.getData().clear();
 
-        byte prev = 0;
         for(byte b : result.bitResult()) {
             switch(b) {
                 case 1:
-                    if(prev == 0) lowToHigh();
+                    low();
+                    lowToHigh();
                     high();
                     break;
                 default:
-                    if(prev == 1) highToLow();
+                    high();
+                    highToLow();
                     low();
                     break;
             }
-
-            prev = b;
         }
 
         return series;

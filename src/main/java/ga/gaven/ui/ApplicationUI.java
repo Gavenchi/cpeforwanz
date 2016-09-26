@@ -26,7 +26,9 @@ package ga.gaven.ui;
 
 import ga.gaven.Application;
 import ga.gaven.StringByteEncoder;
+import ga.gaven.charts.Clock;
 import ga.gaven.charts.DigitalSignal;
+import ga.gaven.charts.Manchester;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -87,7 +89,7 @@ public class ApplicationUI {
 
 
     private NumberAxis time = new NumberAxis();
-    private NumberAxis signal = new NumberAxis(0, 5, 1);
+    private NumberAxis signal = new NumberAxis(-2, 5, 1);
     private final LineChart<Number,Number> chart = new LineChart<>(time, signal);
 
     @FXML
@@ -111,11 +113,17 @@ public class ApplicationUI {
             txtEBCDICOctal.setText(Arrays.toString(ebcdic.inOctal()));
 
             // chart
-            StringByteEncoder.BitResult abit = new StringByteEncoder.BitResult(ascii);
-            chart.getData().clear();
-            chart.getData().add(new DigitalSignal().generateSeries(abit));
+            StringByteEncoder.BitResult bitRes = cmbEncodingValues.getValue().equals("ASCII") ? new StringByteEncoder.BitResult(ascii) : new StringByteEncoder.BitResult(ebcdic);
+            updateChart(bitRes);
 
             txtStatus.setText("");
+        });
+
+        cmbEncodingValues.valueProperty().addListener((observable, oldValue, newValue) -> {
+            StringByteEncoder.Result ascii = encoder.toASCII(txtDataInput.getText());
+            StringByteEncoder.Result ebcdic = encoder.toEBCDIC(txtDataInput.getText());
+            StringByteEncoder.BitResult bitRes = newValue.equals("ASCII") ? new StringByteEncoder.BitResult(ascii) : new StringByteEncoder.BitResult(ebcdic);
+            updateChart(bitRes);
         });
 
         cmbEncoding.setItems(encodings);
@@ -130,6 +138,13 @@ public class ApplicationUI {
         chart.setPrefWidth(Integer.MAX_VALUE);
         chart.setMaxWidth(Integer.MAX_VALUE);
         panelEncode.getChildren().add(chart);
+    }
+
+    private void updateChart(StringByteEncoder.BitResult result) {
+        chart.getData().clear();
+        chart.getData().add(new DigitalSignal().generateSeries(result));
+        chart.getData().add(new Manchester().generateSeries(result));
+        chart.getData().add(new Clock().generateSeries(result));
     }
 
     public void attachApplication(Application application) {

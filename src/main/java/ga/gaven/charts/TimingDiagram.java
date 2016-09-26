@@ -25,7 +25,6 @@
 package ga.gaven.charts;
 
 import ga.gaven.StringByteEncoder;
-import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 
 /**

@@ -30,37 +30,36 @@ import javafx.scene.chart.XYChart;
 /**
  * @author Gavenchi <johnjoshuaferrer@gmail.com>
  */
-public class DigitalSignal implements TimingDiagram {
+public class Clock extends DigitalSignal {
 
-    protected final XYChart.Series series = new XYChart.Series<>();
-    protected double idx = 0;
+    public Clock() {
+        super();
 
-    public DigitalSignal() {
-        series.setName("Data");
+        series.setName("Clock");
     }
 
     @Override
     public void lowToHigh() {
-        series.getData().add(new XYChart.Data(idx, 1.5));
-        series.getData().add(new XYChart.Data(idx, 2.5));
+        series.getData().add(new XYChart.Data(idx, 3));
+        series.getData().add(new XYChart.Data(idx, 4));
     }
 
     @Override
     public void highToLow() {
-        series.getData().add(new XYChart.Data(idx, 2.5));
-        series.getData().add(new XYChart.Data(idx, 1.5));
+        series.getData().add(new XYChart.Data(idx, 3));
+        series.getData().add(new XYChart.Data(idx, 3));
     }
 
     @Override
     public void low() {
-        series.getData().add(new XYChart.Data(idx, 1.5));
-        series.getData().add(new XYChart.Data(idx++, 1.5));
+        series.getData().add(new XYChart.Data(idx, 3));
+        series.getData().add(new XYChart.Data(idx += 0.5, 3));
     }
 
     @Override
     public void high() {
-        series.getData().add(new XYChart.Data(idx, 2.5));
-        series.getData().add(new XYChart.Data(idx++, 2.5));
+        series.getData().add(new XYChart.Data(idx, 4));
+        series.getData().add(new XYChart.Data(idx += 0.5, 4));
     }
 
     @Override
@@ -68,20 +67,20 @@ public class DigitalSignal implements TimingDiagram {
         this.idx = 0;
         this.series.getData().clear();
 
-        byte prev = 0;
-        for(byte b : result.bitResult()) {
-            switch(b) {
-                case 1:
-                    if(prev == 0) lowToHigh();
-                    high();
-                    break;
-                default:
-                    if(prev == 1) highToLow();
-                    low();
-                    break;
+        int length = result.bitResult().length * 2;
+        int prev = 0;
+        for(int i = 0; i < length; i++) {
+            int x = i % 2;
+
+            if(x == 1) {
+                if(prev == 0) lowToHigh();
+                high();
+            } else {
+                if(prev == 1) highToLow();
+                low();
             }
 
-            prev = b;
+            prev = x;
         }
 
         return series;

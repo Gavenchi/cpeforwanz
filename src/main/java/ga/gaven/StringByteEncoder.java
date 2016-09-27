@@ -85,8 +85,8 @@ public class StringByteEncoder {
 
         for(int i = 0; i < bytes.length; i++) {
             b[i] = Integer.toBinaryString(bytes[i] & 0xFF);
-            h[i] = Integer.toHexString(bytes[i]).toUpperCase();
-            o[i] = Integer.toOctalString(bytes[i]);
+            h[i] = Integer.toHexString(bytes[i] & 0xFF).toUpperCase();
+            o[i] = Integer.toOctalString(bytes[i] & 0xFF);
         }
 
         return new Result(b, h, o);

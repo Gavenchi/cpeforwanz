@@ -63,6 +63,16 @@ public class DigitalSignal implements TimingDiagram {
         series.getData().add(new XYChart.Data(idx++, 2.5));
     }
 
+    protected void plot(byte b, byte lastByte) {
+        if(b == 1) {
+            if(lastByte == 0) lowToHigh();
+            high();
+        } else {
+            if(lastByte == 1) highToLow();
+            low();
+        }
+    }
+
     @Override
     public XYChart.Series generateSeries(StringByteEncoder.BitResult result) {
         this.idx = 0;
@@ -70,19 +80,12 @@ public class DigitalSignal implements TimingDiagram {
 
         byte prev = 0;
         for(byte b : result.bitResult()) {
-            switch(b) {
-                case 1:
-                    if(prev == 0) lowToHigh();
-                    high();
-                    break;
-                default:
-                    if(prev == 1) highToLow();
-                    low();
-                    break;
-            }
-
+            plot(b, prev);
             prev = b;
         }
+
+        if(prev == 0) low();
+        else high();
 
         return series;
     }

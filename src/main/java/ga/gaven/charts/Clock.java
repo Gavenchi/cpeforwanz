@@ -71,15 +71,7 @@ public class Clock extends DigitalSignal {
         int prev = 0;
         for(int i = 0; i < length; i++) {
             int x = i % 2;
-
-            if(x == 1) {
-                if(prev == 0) lowToHigh();
-                high();
-            } else {
-                if(prev == 1) highToLow();
-                low();
-            }
-
+            plot((byte)x, (byte)prev);
             prev = x;
         }
 

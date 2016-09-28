@@ -24,6 +24,7 @@
 
 package ga.gaven.charts;
 
+import ga.gaven.SignalEncoding;
 import ga.gaven.StringByteEncoder;
 import javafx.scene.chart.XYChart;
 
@@ -36,7 +37,7 @@ public class Manchester implements TimingDiagram {
     protected double idx = 0;
 
     public Manchester() {
-        series.setName("Manchester");
+        series.setName(SignalEncoding.MANCHESTER);
     }
 
     @Override

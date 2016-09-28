@@ -34,16 +34,21 @@ import ga.gaven.charts.DigitalSignal;
 import ga.gaven.charts.Manchester;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollBar;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.stage.Stage;
 
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 /**
@@ -202,4 +207,43 @@ public class ApplicationUI {
         this.application = application;
     }
 
+    @FXML
+    public void onApplicationQuit(ActionEvent event) throws Exception {
+        application.stop();
+    }
+
+    @FXML
+    public void onAboutAction(ActionEvent event) throws Exception {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
+        alert.setTitle("About");
+        alert.setHeaderText("CpEForWanZ - A CPE 410 Project");
+
+        Label desc = new Label("An open source project, visit: https://github.com/Gavenchi/cpeforwanz/ to contribute.");
+
+        desc.setPadding(new Insets(0, 0, 10, 0));
+
+        Label lics = new Label("Software License");
+
+        String license = new String(Files.readAllBytes(Paths.get(getClass().getResource("/LICENSE").toURI())));
+
+        TextArea textArea = new TextArea(license);
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+
+        textArea.setMaxWidth(Double.MAX_VALUE);
+        textArea.setMaxHeight(Double.MAX_VALUE);
+        GridPane.setVgrow(textArea, Priority.ALWAYS);
+        GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+        GridPane expContent = new GridPane();
+        expContent.setMaxWidth(Double.MAX_VALUE);
+        expContent.add(desc, 0, 0);
+        expContent.add(lics, 0, 1);
+        expContent.add(textArea, 0, 2);
+
+        alert.getDialogPane().setContent(expContent);
+        alert.showAndWait();
+    }
 }

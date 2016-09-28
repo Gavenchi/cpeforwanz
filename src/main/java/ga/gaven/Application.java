@@ -25,8 +25,10 @@
 package ga.gaven;
 
 import ga.gaven.ui.ApplicationUI;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -44,7 +46,7 @@ public class Application extends javafx.application.Application {
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("CPE 410");
+        this.primaryStage.setTitle("CpEForWanZ - A CPE 410 Project");
 
         try {
             FXMLLoader loader = new FXMLLoader();
@@ -54,10 +56,16 @@ public class Application extends javafx.application.Application {
             ApplicationUI ui = loader.<ApplicationUI>getController();
 
             ui.attachApplication(this);
+            primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
             primaryStage.setScene(scene);
             primaryStage.show();
         } catch (IOException ex) {
             ex.fillInStackTrace();
         }
+    }
+
+    @Override
+    public void stop() {
+        primaryStage.close();
     }
 }

@@ -24,6 +24,7 @@
 
 package ga.gaven.charts;
 
+import ga.gaven.SignalEncoding;
 import ga.gaven.StringByteEncoder;
 import javafx.scene.chart.XYChart;
 
@@ -31,6 +32,10 @@ import javafx.scene.chart.XYChart;
  * @author Gavenchi <johnjoshuaferrer@gmail.com>
  */
 public class DifferentialManchester extends Manchester {
+
+    public DifferentialManchester() {
+        series.setName(SignalEncoding.DIFFERENTIAL_MANCHESTER);
+    }
 
     @Override
     public void lowToHigh() {

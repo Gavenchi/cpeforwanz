@@ -40,12 +40,16 @@ import javafx.geometry.Insets;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 
+import java.awt.*;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -218,11 +222,20 @@ public class ApplicationUI {
         alert.setTitle("About");
         alert.setHeaderText("CpEForWanZ - A CPE 410 Project");
 
-        Label desc = new Label("An open source project, visit: https://github.com/Gavenchi/cpeforwanz/ to contribute.");
+        Label desc = new Label("An open source project. To contribute, please visit: ");
+        Hyperlink link = new Hyperlink("https://github.com/Gavenchi/cpeforwanz/");
 
-        desc.setPadding(new Insets(0, 0, 10, 0));
+        link.setOnAction(e -> {
+            Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+            if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+                try {
+                    desktop.browse(new URI("https://github.com/Gavenchi/cpeforwanz/"));
+                } catch (Exception ex) {}
+            }
+        });
 
         Label lics = new Label("Software License");
+        lics.setPadding(new Insets(10, 0, 10, 0));
 
         //using stream to avoid file not found exception when built as executable
         String license = new Scanner(getClass().getResourceAsStream("/LICENSE"), "UTF-8")
@@ -240,8 +253,9 @@ public class ApplicationUI {
         GridPane expContent = new GridPane();
         expContent.setMaxWidth(Double.MAX_VALUE);
         expContent.add(desc, 0, 0);
-        expContent.add(lics, 0, 1);
-        expContent.add(textArea, 0, 2);
+        expContent.add(link, 0, 1);
+        expContent.add(lics, 0, 2);
+        expContent.add(textArea, 0, 3);
 
         alert.getDialogPane().setContent(expContent);
         alert.showAndWait();

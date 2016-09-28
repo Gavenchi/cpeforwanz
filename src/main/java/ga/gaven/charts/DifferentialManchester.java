@@ -71,11 +71,7 @@ public class DifferentialManchester extends Manchester {
 
         for(byte b : result.bitResult()) {
             if(prevBit == -1) {
-                if(b == 0) {
-                    toggled = false;
-                } else {
-                    toggled = true;
-                }
+                toggled = b != 0;
             } else if (prevBit != b) {
                 toggled = !toggled;
             }

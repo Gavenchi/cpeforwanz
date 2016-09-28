@@ -53,7 +53,7 @@ public class Application extends javafx.application.Application {
             loader.setLocation(getClass().getResource("/ga/gaven/ui/ApplicationUI.fxml"));
 
             Scene scene = new Scene(loader.load());
-            ApplicationUI ui = loader.<ApplicationUI>getController();
+            ApplicationUI ui = loader.getController();
 
             ui.attachApplication(this);
             primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));

@@ -46,10 +46,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Scanner;
 
 /**
  * @author Gavenchi <johnjoshuaferrer@gmail.com>
@@ -226,7 +224,9 @@ public class ApplicationUI {
 
         Label lics = new Label("Software License");
 
-        String license = new String(Files.readAllBytes(Paths.get(getClass().getResource("/LICENSE").toURI())));
+        //using stream to avoid file not found exception when built as executable
+        String license = new Scanner(getClass().getResourceAsStream("/LICENSE"), "UTF-8")
+                .useDelimiter("\\Z").next();
 
         TextArea textArea = new TextArea(license);
         textArea.setEditable(false);

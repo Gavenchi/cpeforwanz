@@ -22,28 +22,12 @@
  * SOFTWARE.
  */
 
-package ga.gaven.charts;
-
-import ga.gaven.StringByteEncoder;
-import javafx.scene.chart.XYChart;
+package ga.gaven;
 
 /**
  * @author Gavenchi <johnjoshuaferrer@gmail.com>
  */
-public interface TimingDiagram {
-
-    void lowToHigh();
-    void highToLow();
-    void low();
-    void high();
-
-    default double minimum() {
-        return 0;
-    }
-
-    default double maximum() {
-        return 100;
-    }
-
-    XYChart.Series generateSeries(StringByteEncoder.BitResult result);
+public class StringEncoding {
+    public static final String ASCII = "ASCII";
+    public static final String EBCDIC = "EBCDIC";
 }

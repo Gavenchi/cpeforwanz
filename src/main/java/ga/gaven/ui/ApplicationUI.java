@@ -25,8 +25,11 @@
 package ga.gaven.ui;
 
 import ga.gaven.Application;
+import ga.gaven.SignalEncoding;
 import ga.gaven.StringByteEncoder;
+import ga.gaven.StringEncoding;
 import ga.gaven.charts.Clock;
+import ga.gaven.charts.DifferentialManchester;
 import ga.gaven.charts.DigitalSignal;
 import ga.gaven.charts.Manchester;
 import javafx.collections.FXCollections;
@@ -37,6 +40,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 
@@ -71,33 +75,84 @@ public class ApplicationUI {
     private ComboBox<String> cmbEncodingValues;
     @FXML
     private HBox panelEncode;
+    @FXML
+    private ScrollBar scrollLineChart;
 
-    private StringByteEncoder encoder = new StringByteEncoder();
+    private final StringByteEncoder encoder = new StringByteEncoder();
 
-    private ObservableList<String> values = FXCollections.observableArrayList(
-            "ASCII",
-            "EBCDIC"
+    private final ObservableList<String> values = FXCollections.observableArrayList(
+            StringEncoding.ASCII,
+            StringEncoding.EBCDIC
     );
 
-    private ObservableList<String> encodings = FXCollections.observableArrayList(
-            "Manchester",
-            "Bipolar NRZL",
-            "Bipolar NRI",
-            "Differential Manchester",
-            "Bipolar AMI"
+    private final ObservableList<String> encodings = FXCollections.observableArrayList(
+            SignalEncoding.MANCHESTER,
+            SignalEncoding.DIFFERENTIAL_MANCHESTER,
+            SignalEncoding.BIPOLAR_NRI,
+            SignalEncoding.BIPOLAR_NRZL,
+            SignalEncoding.BIPOLAR_AMI
     );
 
-
-    private NumberAxis time = new NumberAxis();
-    private NumberAxis signal = new NumberAxis(-2, 5, 1);
+    private final NumberAxis time = new NumberAxis();
+    private final NumberAxis signal = new NumberAxis(-2, 5, 1);
     private final LineChart<Number,Number> chart = new LineChart<>(time, signal);
+
+    // signals
+    private final Clock clock = new Clock();
+
+    private static final int RANGE = 10;
 
     @FXML
     private void initialize() {
+        // initialize axes
+        time.setAutoRanging(false);
+        time.setUpperBound(RANGE);
+        time.setTickUnit(1);
+
         txtStatus.setText("");
 
+        // default values
+        cmbEncoding.setItems(encodings);
+        cmbEncoding.setValue(encodings.get(0));
+        cmbEncodingValues.setItems(values);
+        cmbEncodingValues.setValue(values.get(0));
+
+        // chart
+        time.setLabel("Time");
+        signal.setLabel("Signal");
+        chart.setCreateSymbols(false);
+        chart.setPadding(new Insets(0, 10, 0, 0));
+        chart.setPrefWidth(Integer.MAX_VALUE);
+        chart.setMaxWidth(Integer.MAX_VALUE);
+        chart.setAnimated(false);
+        panelEncode.getChildren().add(chart);
+        scrollLineChart.setVisible(false);
+
+        // listeners
+        cmbEncodingValues.valueProperty().addListener((observable, oldValue, newValue) -> updateChart(dataResult(newValue), cmbEncoding.getValue()));
+        cmbEncoding.valueProperty().addListener((observable, oldValue, newValue) -> updateChart(dataResult(cmbEncodingValues.getValue()), newValue));
+
+        scrollLineChart.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(clock.maximum() > RANGE) {
+                time.setLowerBound(newValue.doubleValue());
+                time.setUpperBound(newValue.doubleValue() + RANGE);
+                scrollLineChart.setMax(clock.maximum() - RANGE);
+            }
+        });
+
+        chart.setOnScroll(event -> {
+            double negativity = event.getDeltaY() / Math.abs(event.getDeltaY());
+            double result = scrollLineChart.getValue() - ((RANGE / 2) * negativity);
+            if(result < scrollLineChart.getMin()) {
+                scrollLineChart.setValue(scrollLineChart.getMin());
+            } else if (result > scrollLineChart.getMax()) {
+                scrollLineChart.setValue(scrollLineChart.getMax());
+            } else {
+                scrollLineChart.setValue(result);
+            }
+        });
+
         txtDataInput.textProperty().addListener((observable, oldValue, newValue) -> {
-            txtStatus.setText("Encoding...");
             // ascii
             StringByteEncoder.Result ascii = encoder.toASCII(newValue);
 
@@ -113,38 +168,34 @@ public class ApplicationUI {
             txtEBCDICOctal.setText(Arrays.toString(ebcdic.inOctal()));
 
             // chart
-            StringByteEncoder.BitResult bitRes = cmbEncodingValues.getValue().equals("ASCII") ? new StringByteEncoder.BitResult(ascii) : new StringByteEncoder.BitResult(ebcdic);
-            updateChart(bitRes);
-
-            txtStatus.setText("");
+            updateChart(dataResult(cmbEncodingValues.getValue()), cmbEncoding.getValue());
         });
-
-        cmbEncodingValues.valueProperty().addListener((observable, oldValue, newValue) -> {
-            StringByteEncoder.Result ascii = encoder.toASCII(txtDataInput.getText());
-            StringByteEncoder.Result ebcdic = encoder.toEBCDIC(txtDataInput.getText());
-            StringByteEncoder.BitResult bitRes = newValue.equals("ASCII") ? new StringByteEncoder.BitResult(ascii) : new StringByteEncoder.BitResult(ebcdic);
-            updateChart(bitRes);
-        });
-
-        cmbEncoding.setItems(encodings);
-        cmbEncoding.setValue(encodings.get(0));
-        cmbEncodingValues.setItems(values);
-        cmbEncodingValues.setValue(values.get(0));
-
-        time.setLabel("Time");
-        signal.setLabel("Signal");
-        chart.setCreateSymbols(false);
-        chart.setPadding(new Insets(0, 10, 0, 0));
-        chart.setPrefWidth(Integer.MAX_VALUE);
-        chart.setMaxWidth(Integer.MAX_VALUE);
-        panelEncode.getChildren().add(chart);
     }
 
-    private void updateChart(StringByteEncoder.BitResult result) {
+    private StringByteEncoder.BitResult dataResult(String type) {
+        return type.equals(StringEncoding.ASCII) ? new StringByteEncoder.BitResult(encoder.toASCII(txtDataInput.getText())) : new StringByteEncoder.BitResult(encoder.toEBCDIC(txtDataInput.getText()));
+    }
+
+    private void updateChart(StringByteEncoder.BitResult result, String encoding) {
         chart.getData().clear();
+        chart.getData().add(clock.generateSeries(result));
         chart.getData().add(new DigitalSignal().generateSeries(result));
-        chart.getData().add(new Manchester().generateSeries(result));
-        chart.getData().add(new Clock().generateSeries(result));
+
+        switch(encoding) {
+            case SignalEncoding.MANCHESTER:
+                chart.getData().add(new Manchester().generateSeries(result));
+                break;
+            case SignalEncoding.DIFFERENTIAL_MANCHESTER:
+                chart.getData().add(new DifferentialManchester().generateSeries(result));
+                break;
+            case SignalEncoding.BIPOLAR_NRZL:
+                break;
+            case SignalEncoding.BIPOLAR_NRI:
+                break;
+            case SignalEncoding.BIPOLAR_AMI:
+                break;
+        }
+
     }
 
     public void attachApplication(Application application) {

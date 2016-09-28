@@ -32,8 +32,8 @@ import javafx.scene.chart.XYChart;
  */
 public class Manchester implements TimingDiagram {
 
-    private final XYChart.Series series = new XYChart.Series<>();
-    private double idx = 0;
+    protected final XYChart.Series series = new XYChart.Series<>();
+    protected double idx = 0;
 
     public Manchester() {
         series.setName("Manchester");
@@ -63,24 +63,32 @@ public class Manchester implements TimingDiagram {
         series.getData().add(new XYChart.Data(idx += 0.5, 0.5));
     }
 
+    protected void manchesterLow(int prevBit) {
+        if(prevBit == 0) lowToHigh();
+        high();
+        highToLow();
+        low();
+    }
+
+    protected void manchesterHigh(int prevBit) {
+        if(prevBit == 1) highToLow();
+        low();
+        lowToHigh();
+        high();
+    }
+
     @Override
     public XYChart.Series generateSeries(StringByteEncoder.BitResult result) {
         this.idx = 0;
         this.series.getData().clear();
+        byte prevBit = -1;
+        for (byte b : result.bitResult()) {
+            if (b == 1)
+                manchesterHigh(prevBit);
+            else
+                manchesterLow(prevBit);
 
-        for(byte b : result.bitResult()) {
-            switch(b) {
-                case 1:
-                    low();
-                    lowToHigh();
-                    high();
-                    break;
-                default:
-                    high();
-                    highToLow();
-                    low();
-                    break;
-            }
+            prevBit = b;
         }
 
         return series;

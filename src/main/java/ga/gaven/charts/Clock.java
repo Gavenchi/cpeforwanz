@@ -63,6 +63,11 @@ public class Clock extends DigitalSignal {
     }
 
     @Override
+    public double maximum() {
+        return idx;
+    }
+
+    @Override
     public XYChart.Series generateSeries(StringByteEncoder.BitResult result) {
         this.idx = 0;
         this.series.getData().clear();

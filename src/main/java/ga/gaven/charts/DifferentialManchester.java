@@ -30,57 +30,30 @@ import javafx.scene.chart.XYChart;
 /**
  * @author Gavenchi <johnjoshuaferrer@gmail.com>
  */
-public class DigitalSignal implements TimingDiagram {
-
-    protected final XYChart.Series series = new XYChart.Series<>();
-    protected double idx = 0;
-
-    public DigitalSignal() {
-        series.setName("Data");
-    }
+public class DifferentialManchester extends Manchester {
 
     @Override
     public void lowToHigh() {
-        series.getData().add(new XYChart.Data(idx, 1.5));
-        series.getData().add(new XYChart.Data(idx, 2.5));
+        series.getData().add(new XYChart.Data(idx, 1));
+        series.getData().add(new XYChart.Data(idx, 1));
     }
 
     @Override
     public void highToLow() {
-        series.getData().add(new XYChart.Data(idx, 2.5));
-        series.getData().add(new XYChart.Data(idx, 1.5));
+        series.getData().add(new XYChart.Data(idx, 0));
+        series.getData().add(new XYChart.Data(idx, 0));
     }
 
     @Override
     public void low() {
-        series.getData().add(new XYChart.Data(idx, 1.5));
-        series.getData().add(new XYChart.Data(idx++, 1.5));
+        series.getData().add(new XYChart.Data(idx, 0));
+        series.getData().add(new XYChart.Data(idx += 0.5, 0));
     }
 
     @Override
     public void high() {
-        series.getData().add(new XYChart.Data(idx, 2.5));
-        series.getData().add(new XYChart.Data(idx++, 2.5));
-    }
-
-    @Override
-    public double minimum() {
-        return 0;
-    }
-
-    @Override
-    public double maximum() {
-        return idx;
-    }
-
-    protected void plot(byte b, byte lastByte) {
-        if(b == 1) {
-            if(lastByte == 0) lowToHigh();
-            high();
-        } else {
-            if(lastByte == 1) highToLow();
-            low();
-        }
+        series.getData().add(new XYChart.Data(idx, 1));
+        series.getData().add(new XYChart.Data(idx += 0.5, 1));
     }
 
     @Override
@@ -88,15 +61,27 @@ public class DigitalSignal implements TimingDiagram {
         this.idx = 0;
         this.series.getData().clear();
 
-        byte prev = 0;
-        for(byte b : result.bitResult()) {
-            plot(b, prev);
-            prev = b;
-        }
+        byte prevBit = -1;
+        boolean toggled = false;
 
-        if(prev == 0) low();
-        else high();
+        for(byte b : result.bitResult()) {
+            if(prevBit == -1) {
+                if(b == 0) {
+                    toggled = false;
+                } else {
+                    toggled = true;
+                }
+            } else if (prevBit != b) {
+                toggled = !toggled;
+            }
+
+            if(toggled) manchesterLow(prevBit);
+            else manchesterHigh(prevBit);
+
+            prevBit = b;
+        }
 
         return series;
     }
+
 }

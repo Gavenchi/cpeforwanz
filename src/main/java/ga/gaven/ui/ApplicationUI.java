@@ -69,11 +69,15 @@ public class ApplicationUI {
     @FXML
     private TextArea txtASCIIOctal;
     @FXML
+    private TextArea txtASCIIGray;
+    @FXML
     private TextArea txtEBCDIC;
     @FXML
     private TextArea txtEBCDICHex;
     @FXML
     private TextArea txtEBCDICOctal;
+    @FXML
+    private TextArea txtEBCDICGray;
     @FXML
     private Label txtStatus;
     @FXML
@@ -166,6 +170,7 @@ public class ApplicationUI {
             txtASCII.setText(Arrays.toString(ascii.inBits()));
             txtASCIIHex.setText(Arrays.toString(ascii.inHex()));
             txtASCIIOctal.setText(Arrays.toString(ascii.inOctal()));
+            txtASCIIGray.setText(Arrays.toString(ascii.inGrayCode()));
 
             // ebcdic
             StringByteEncoder.Result ebcdic = encoder.toEBCDIC(newValue);
@@ -173,6 +178,7 @@ public class ApplicationUI {
             txtEBCDIC.setText(Arrays.toString(ebcdic.inBits()));
             txtEBCDICHex.setText(Arrays.toString(ebcdic.inHex()));
             txtEBCDICOctal.setText(Arrays.toString(ebcdic.inOctal()));
+            txtEBCDICGray.setText(Arrays.toString(ebcdic.inGrayCode()));
 
             // chart
             updateChart(dataResult(cmbEncodingValues.getValue()), cmbEncoding.getValue());

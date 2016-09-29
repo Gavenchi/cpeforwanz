@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -44,7 +50,7 @@
   ~ SOFTWARE.
   -->
 
-<VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ga.gaven.ui.ApplicationUI">
+<VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ga.gaven.ui.ApplicationUI">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
@@ -84,6 +90,11 @@
                               <TextArea fx:id="txtASCIIOctal" editable="false" prefHeight="200.0" prefWidth="200.0" text="[]" wrapText="true" />
                            </content>
                         </Tab>
+                        <Tab text="Gray">
+                           <content>
+                              <TextArea fx:id="txtASCIIGray" editable="false" prefHeight="200.0" prefWidth="200.0" wrapText="true" />
+                           </content>
+                        </Tab>
                     </tabs>
                   </TabPane>
                   <Label text="EBCDIC" />
@@ -102,6 +113,11 @@
                         <Tab text="Octal">
                            <content>
                               <TextArea fx:id="txtEBCDICOctal" editable="false" prefHeight="200.0" prefWidth="200.0" text="[]" wrapText="true" />
+                           </content>
+                        </Tab>
+                        <Tab text="Gray">
+                           <content>
+                              <TextArea fx:id="txtEBCDICGray" editable="false" prefHeight="200.0" prefWidth="200.0" wrapText="true" />
                            </content>
                         </Tab>
                     </tabs>

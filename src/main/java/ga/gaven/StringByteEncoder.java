@@ -36,11 +36,26 @@ public class StringByteEncoder {
         final String[] bits;
         final String[] hex;
         final String[] octal;
+        final String[] grayCode;
 
         private Result(String[] bits, String[] hex, String[] octal) {
             this.bits = bits;
             this.hex = hex;
             this.octal = octal;
+            this.grayCode = new String[bits.length];
+            StringBuilder sb = new StringBuilder();
+            for(int i = 0; i < bits.length; i++) {
+                sb.append(bits[i].charAt(0));
+
+                for(int x = 0; x < bits[i].length() - 1; x++) {
+                    byte b1 = Byte.valueOf(String.valueOf(bits[i].charAt(x)));
+                    byte b2 = Byte.valueOf(String.valueOf(bits[i].charAt(x+1)));
+                    sb.append(b1 ^ b2);
+                }
+
+                this.grayCode[i] = sb.toString();
+                sb.setLength(0);
+            }
         }
 
         public String[] inBits() {
@@ -54,6 +69,8 @@ public class StringByteEncoder {
         public String[] inOctal() {
             return octal;
         }
+
+        public String[] inGrayCode() { return grayCode; }
     }
 
     public static class BitResult {

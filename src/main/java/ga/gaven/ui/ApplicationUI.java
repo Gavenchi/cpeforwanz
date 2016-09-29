@@ -161,6 +161,8 @@ public class ApplicationUI {
             } else {
                 scrollLineChart.setValue(result);
             }
+
+            scrollLineChart.setVisibleAmount(scrollLineChart.getMax() * 0.25);
         });
 
         txtDataInput.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -193,6 +195,13 @@ public class ApplicationUI {
         chart.getData().clear();
         chart.getData().add(clock.generateSeries(result));
         chart.getData().add(new DigitalSignal().generateSeries(result));
+
+        if(clock.maximum() > RANGE) {
+            scrollLineChart.setVisible(true);
+            scrollLineChart.setVisibleAmount(scrollLineChart.getMax() * 0.25);
+        } else {
+            scrollLineChart.setVisible(false);
+        }
 
         switch(encoding) {
             case SignalEncoding.MANCHESTER:

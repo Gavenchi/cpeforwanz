@@ -29,8 +29,5 @@ package ga.gaven;
  */
 public class SignalEncoding {
     public static final String MANCHESTER = "Manchester";
-    public static final String BIPOLAR_NRZL = "Bipolar NRZL";
-    public static final String BIPOLAR_NRI = "Bipolar NRI";
     public static final String DIFFERENTIAL_MANCHESTER = "Differential Manchester";
-    public static final String BIPOLAR_AMI = "Bipolar AMI";
 }

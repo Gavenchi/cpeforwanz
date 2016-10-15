@@ -98,10 +98,7 @@ public class ApplicationUI {
 
     private final ObservableList<String> encodings = FXCollections.observableArrayList(
             SignalEncoding.MANCHESTER,
-            SignalEncoding.DIFFERENTIAL_MANCHESTER,
-            SignalEncoding.BIPOLAR_NRI,
-            SignalEncoding.BIPOLAR_NRZL,
-            SignalEncoding.BIPOLAR_AMI
+            SignalEncoding.DIFFERENTIAL_MANCHESTER
     );
 
     private final NumberAxis time = new NumberAxis();
@@ -209,12 +206,6 @@ public class ApplicationUI {
                 break;
             case SignalEncoding.DIFFERENTIAL_MANCHESTER:
                 chart.getData().add(new DifferentialManchester().generateSeries(result));
-                break;
-            case SignalEncoding.BIPOLAR_NRZL:
-                break;
-            case SignalEncoding.BIPOLAR_NRI:
-                break;
-            case SignalEncoding.BIPOLAR_AMI:
                 break;
         }
 
